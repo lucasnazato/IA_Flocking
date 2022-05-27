@@ -19,7 +19,6 @@ public class FlockManager : MonoBehaviour
 
     void Start()
     {
-
         allFish = new GameObject[numFish];
 
         // For loop para instanciar todos os peixes em um posicao aleatoria, mas dentro dos limites definidos, e definir o manager dos peixes como esse
