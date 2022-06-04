@@ -251,6 +251,8 @@ MonoBehaviour:
   swinLimits: {x: 1, y: 1, z: 1}
   minSpeed: 0.29
   maxSpeed: 1.93
+  neighbourDistance: 3.15
+  rotationSpeed: 3.08
 --- !u!4 &493528681
 Transform:
   m_ObjectHideFlags: 0
