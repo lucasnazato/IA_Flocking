@@ -9,6 +9,7 @@ public class FlockManager : MonoBehaviour
     public int numFish = 20;
     public GameObject[] allFish;
     public Vector3 swinLimits = new Vector3(5, 5, 5);
+    public Vector3 goalPos;
 
     // Velocidade minima e maxima do peixe
     [Header("Configurações do Cardume")]
@@ -35,5 +36,20 @@ public class FlockManager : MonoBehaviour
             allFish[i] = (GameObject)Instantiate(fishPrefab, pos, Quaternion.identity);
             allFish[i].GetComponent<Flock>().myManager = this;
         }
+        goalPos = this.transform.position;
+    }
+
+    private void Update()
+    {
+        // Definir o goalPos como a posição deste objeto
+        goalPos = this.transform.position;
+
+        // Mudar a posição do goalPos de forma aleatoria
+        if (Random.Range(0, 100) < 10)
+        {
+            goalPos = this.transform.position + new Vector3(Random.Range(-swinLimits.x, swinLimits.x),
+                                                            Random.Range(-swinLimits.y, swinLimits.y), 
+                                                            Random.Range(-swinLimits.z, swinLimits.z));
+        }  
     }
 }

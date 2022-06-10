@@ -7,6 +7,7 @@ public class Flock : MonoBehaviour
     // Variavel para o manager e o speed
     public FlockManager myManager;
     float speed;
+    bool turning = false;
 
     private void Start()
     {
@@ -16,8 +17,46 @@ public class Flock : MonoBehaviour
 
     private void Update()
     {
-        // Chamar metodo para controlar a distancia entre os peixes 
-        ApplyRules();
+        // Criar bounds para delimitar uma area
+        Bounds b = new Bounds(myManager.transform.position, myManager.swinLimits * 2);
+
+        // Criar um raycast e um vetor de direção do manager para o peixe
+        RaycastHit hit = new RaycastHit();
+        Vector3 direction = myManager.transform.position - transform.position;
+
+        // Se o peixe não estiver dentro da area dos bounds
+        if (!b.Contains(transform.position))
+        {
+            // Definir o turning como verdade e o vetor direction como a direção do manager para o peixe
+            turning = true;
+            direction = myManager.transform.position - transform.position;
+        }
+        // Se o peixe detectar um hit na sua frente
+        else if (Physics.Raycast(transform.position, this.transform.forward * 50, out hit))
+        {
+            // Definir turning como verdadeiro e a direção como a inversa ao normal do hit
+            turning = true;
+            direction = Vector3.Reflect(this.transform.forward, hit.normal);
+        }
+        // 
+        else
+        {
+            turning = false;
+        }
+
+        // Se truning for verdade definir a rotação como Quaternion.Slerp na direção da direction
+        if (turning)
+        {
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), myManager.rotationSpeed * Time.deltaTime);
+        }
+        // Se for falso, deixar a velocidade aleatoria e chamar o apply rules
+        else
+        {
+            if (Random.Range(0, 100) < 10)
+                speed = Random.Range(myManager.minSpeed, myManager.maxSpeed);
+            if (Random.Range(0, 100) < 20)
+                ApplyRules();
+        }
 
         // Movimentar o peixe para frente
         transform.Translate(0, 0, Time.deltaTime * speed);
@@ -70,7 +109,7 @@ public class Flock : MonoBehaviour
         if (groupSize > 0)
         {
             // Calcular a posicao do valor do centro e a velocidade (Dar clamp na velocidade)
-            vcentre = vcentre / groupSize;
+            vcentre = vcentre / groupSize + (myManager.goalPos - this.transform.position);
             speed = gSpeed / groupSize;
             speed = Mathf.Clamp(speed, myManager.minSpeed, myManager.maxSpeed);
 
